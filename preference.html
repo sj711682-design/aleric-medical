@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Book an Appointment | Aleric Medical</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="js/script.js" defer></script>
+  <style>
+    .booking-page {
+      max-width: 1000px;
+      margin: 50px auto;
+      padding: 30px 20px;
+    }
+    .booking-intro { text-align: center; margin-bottom: 35px; }
+    .booking-form {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 20px;
+      background: #f3f8fc;
+      padding: 30px;
+      border-radius: 18px;
+    }
+    .form-field { display: flex; flex-direction: column; gap: 8px; }
+    .form-field.full { grid-column: 1 / -1; }
+    .form-field label { font-weight: 600; color: #183c55; }
+    .form-field input, .form-field select, .form-field textarea {
+      width: 100%;
+      padding: 13px;
+      border: 1px solid #cbd9e4;
+      border-radius: 8px;
+      background: white;
+      font: inherit;
+      box-sizing: border-box;
+    }
+    .booking-form button { cursor: pointer; border: 0; font: inherit; }
+    #booking-message {
+      grid-column: 1 / -1;
+      padding: 15px;
+      border-radius: 8px;
+      background: #e0f5e8;
+      color: #145b35;
+    }
+    @media(max-width: 600px) {
+      .booking-form { grid-template-columns: 1fr; padding: 20px; }
+      .form-field.full, #booking-message { grid-column: auto; }
+    }
+  </style>
+</head>
+<body>
+<header class="header">
+  <a href="index.html" class="logo">✚ Aleric<span>Medical</span></a>
+  <nav class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="services.html">Services</a>
+    <a href="facilities.html">Reception & Facilities</a>
+    <a href="preference.html">Book Appointment</a>
+  </nav>
+</header>
+
+<main class="booking-page">
+  <div class="booking-intro">
+    <p class="eyebrow">PATIENT APPOINTMENTS</p>
+    <h1>Choose Your <span>Preference</span></h1>
+    <p>Tell us which service, doctor, date and time you prefer.</p>
+  </div>
+
+  <form class="booking-form" id="preference-form">
+    <div class="form-field">
+      <label for="patient-name">Full Name *</label>
+      <input id="patient-name" name="patientName" type="text" required placeholder="Enter your name">
+    </div>
+
+    <div class="form-field">
+      <label for="patient-phone">Phone Number *</label>
+      <input id="patient-phone" name="phone" type="tel" required placeholder="Enter your phone number">
+    </div>
+
+    <div class="form-field">
+      <label for="department">Choose Department *</label>
+      <select id="department" name="department" required>
+        <option value="">Select a department</option>
+        <option>General Medicine</option>
+        <option>Cardiology</option>
+        <option>Pediatrics</option>
+        <option>Dermatology</option>
+        <option>Surgery</option>
+        <option>Diagnostics</option>
+      </select>
+    </div>
+
+    <div class="form-field">
+      <label for="doctor">Preferred Doctor</label>
+      <select id="doctor" name="doctor">
+        <option value="">Any available doctor</option>
+        <option>Dr. Ayesha</option>
+        <option>Dr. Ahmed</option>
+        <option>Dr. Sara</option>
+      </select>
+    </div>
+
+    <div class="form-field">
+      <label for="date">Preferred Date *</label>
+      <input id="date" name="date" type="date" required>
+    </div>
+
+    <div class="form-field">
+      <label for="time">Preferred Time *</label>
+      <select id="time" name="time" required>
+        <option value="">Choose a time</option>
+        <option>09:00 AM</option>
+        <option>10:00 AM</option>
+        <option>11:00 AM</option>
+        <option>12:00 PM</option>
+        <option>02:00 PM</option>
+        <option>03:00 PM</option>
+        <option>04:00 PM</option>
+      </select>
+    </div>
+
+    <div class="form-field full">
+      <label for="reason">Reason for Visit</label>
+      <textarea id="reason" name="reason" rows="4" placeholder="Briefly describe your reason for visiting (optional)"></textarea>
+    </div>
+
+    <div class="form-field full">
+      <button type="submit" class="btn">Submit Appointment Request ↗</button>
+    </div>
+
+    <p id="booking-message" role="status" hidden></p>
+  </form>
+</main>
+
+<footer class="footer">
+  <p>© <span id="current-year"></span> Aleric Medical</p>
+  <a href="index.html">Back to Home</a>
+</footer>
+
+<script>
+  const dateField = document.getElementById("date");
+  const today = new Date();
+  dateField.min = [
+    today.getFullYear(),
+    String(today.getMonth() + 1).padStart(2, "0"),
+    String(today.getDate()).padStart(2, "0")
+  ].join("-");
+
+  const params = new URLSearchParams(window.location.search);
+  const requestedDepartment = params.get("department");
+  if (requestedDepartment) {
+    const departmentField = document.getElementById("department");
+    const match = [...departmentField.options].find(
+      option => option.text.toLowerCase() === requestedDepartment.toLowerCase()
+    );
+    if (match) departmentField.value = match.value;
+  }
+
+  document.getElementById("preference-form").addEventListener("submit", function(event) {
+    event.preventDefault();
+    const formData = new FormData(this);
+    const message = document.getElementById("booking-message");
+    message.textContent =
+      "Thank you, " + formData.get("patientName") +
+      ". Your appointment request has been prepared for " +
+      formData.get("department") + " on " + formData.get("date") +
+      " at " + formData.get("time") +
+      ". This is a demo confirmation only; the clinic has not received your request.";
+    message.hidden = false;
+    message.scrollIntoView({ behavior: "smooth", block: "center" });
+  });
+</script>
+</body>
+</html>
